@@ -12,6 +12,9 @@ local TweenService = game:GetService("TweenService")
 
 local SidebarButton = require(script.Parent.Parent.Components.SidebarButton)
 local useSidebarState = require(script.Parent.Parent.Hooks.useSidebarState)
+local useWorkspaceCameras = require(script.Parent.Parent.Hooks.useWorkspaceCameras)
+local useCharacterAnimations = require(script.Parent.Parent.Hooks.useCharacterAnimations)
+local useWorkspaceTeleports = require(script.Parent.Parent.Hooks.useWorkspaceTeleports)
 local Themes = require(script.Parent.Parent.Themes)
 
 local e = React.createElement
@@ -23,6 +26,13 @@ type SidebarLayoutProps = {
 local function SidebarLayout(props: SidebarLayoutProps)
 	local theme = Themes.getTheme()
 	local sidebarState = useSidebarState()
+	local cameraHook = useWorkspaceCameras()
+	local animationHook = useCharacterAnimations()
+	local teleportHook = useWorkspaceTeleports()
+	local buttonPrimary = theme.Primary
+	local buttonSecondary = theme.Secondary
+	local buttonStroke = theme.Stroke
+	local buttonText = theme.Text
 
 	-- Referencias para animación
 	local containerRef = React.useRef(nil)
@@ -76,7 +86,6 @@ local function SidebarLayout(props: SidebarLayoutProps)
 	end, { sidebarState.uiHidden })
 
 	return e("Frame", {
-		Name = "SidebarContainer",
 		Size = UDim2.fromScale(sidebarWidthScale, 1),
 		Position = UDim2.fromScale(0, 0),
 		AnchorPoint = Vector2.new(0, 0),
@@ -121,12 +130,15 @@ local function SidebarLayout(props: SidebarLayoutProps)
 
 		-- Contenedor de botones con layout automático
 		ButtonsContainer = e("Frame", {
-			Name = "ButtonsContainer",
 			Size = UDim2.fromScale(1, 0.8),
 			Position = UDim2.fromScale(0, 0),
 			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 		}, {
+			ButtonsPadding = e("UIPadding", {
+				PaddingTop = UDim.new(0, 50),
+			}),
+
 			UIListLayout = e("UIListLayout", {
 				Padding = UDim.new(0, 10),
 				HorizontalAlignment = Enum.HorizontalAlignment.Center,
@@ -135,55 +147,162 @@ local function SidebarLayout(props: SidebarLayoutProps)
 				FillDirection = Enum.FillDirection.Vertical,
 			}),
 
+			SectionTeleports = e("TextLabel", {
+				Text = "TELEPORTS",
+				FontFace = Font.new("rbxasset://fonts/families/Kanit.json", Enum.FontWeight.Bold),
+				TextSize = 14,
+				TextColor3 = Color3.fromRGB(225, 225, 225),
+				BackgroundTransparency = 1,
+				BorderSizePixel = 0,
+				Size = UDim2.fromScale(0.9, 0.04),
+				LayoutOrder = 1,
+			}),
+
+			TeleportButton1 = e(SidebarButton, {
+				Text = "Tp_Z1",
+				ColorPrimary = buttonPrimary,
+				ColorSecondary = buttonSecondary,
+				ColorStroke = buttonStroke,
+				TextColor = buttonText,
+				LayoutOrder = 2,
+				OnClick = function()
+					teleportHook.teleportByIndex(1)
+				end,
+			}),
+
+			TeleportButton2 = e(SidebarButton, {
+				Text = "Tp_Z2",
+				ColorPrimary = buttonPrimary,
+				ColorSecondary = buttonSecondary,
+				ColorStroke = buttonStroke,
+				TextColor = buttonText,
+				LayoutOrder = 3,
+				OnClick = function()
+					teleportHook.teleportByIndex(2)
+				end,
+			}),
+
+			TeleportButton3 = e(SidebarButton, {
+				Text = "Tp_Z3",
+				ColorPrimary = buttonPrimary,
+				ColorSecondary = buttonSecondary,
+				ColorStroke = buttonStroke,
+				TextColor = buttonText,
+				LayoutOrder = 4,
+				OnClick = function()
+					teleportHook.teleportByIndex(3)
+				end,
+			}),
+
+			SectionCameras = e("TextLabel", {
+				Text = "CAMARAS",
+				FontFace = Font.new("rbxasset://fonts/families/Kanit.json", Enum.FontWeight.Bold),
+				TextSize = 14,
+				TextColor3 = Color3.fromRGB(225, 225, 225),
+				BackgroundTransparency = 1,
+				BorderSizePixel = 0,
+				Size = UDim2.fromScale(0.9, 0.04),
+				LayoutOrder = 5,
+			}),
+
 			-- Botón de ejemplo 1
 			Button1 = e(SidebarButton, {
-				Text = "Herramienta 1",
-				ColorPrimary = theme.Primary,
-				ColorSecondary = theme.Secondary,
-				ColorStroke = theme.Stroke,
-				LayoutOrder = 1,
+				Text = "Cam_Z1",
+				ColorPrimary = buttonPrimary,
+				ColorSecondary = buttonSecondary,
+				ColorStroke = buttonStroke,
+				TextColor = buttonText,
+				LayoutOrder = 6,
 				OnClick = function()
-					print("Herramienta 1 presionada")
+					cameraHook.switchToCameraByIndex(1)
 				end,
 			}),
 
 			-- Botón de ejemplo 2
 			Button2 = e(SidebarButton, {
-				Text = "Herramienta 2",
-				ColorPrimary = theme.Accent,
-				ColorSecondary = theme.Secondary,
-				ColorStroke = theme.Stroke,
-				LayoutOrder = 2,
+				Text = "Cam_Z2",
+				ColorPrimary = buttonPrimary,
+				ColorSecondary = buttonSecondary,
+				ColorStroke = buttonStroke,
+				TextColor = buttonText,
+				LayoutOrder = 7,
 				OnClick = function()
-					print("Herramienta 2 presionada")
+					cameraHook.switchToCameraByIndex(2)
 				end,
 			}),
 
 			-- Botón de ejemplo 3
 			Button3 = e(SidebarButton, {
-				Text = "Configuración",
-				ColorPrimary = theme.Primary,
-				ColorSecondary = theme.Secondary,
-				ColorStroke = theme.Stroke,
-				LayoutOrder = 3,
+				Text = "Cam_Z3",
+				ColorPrimary = buttonPrimary,
+				ColorSecondary = buttonSecondary,
+				ColorStroke = buttonStroke,
+				TextColor = buttonText,
+				LayoutOrder = 8,
 				OnClick = function()
-					print("Configuración presionada")
+					cameraHook.switchToCameraByIndex(3)
+				end,
+			}),
+
+			SectionAnims = e("TextLabel", {
+				Text = "ANIMACIONES",
+				FontFace = Font.new("rbxasset://fonts/families/Kanit.json", Enum.FontWeight.Bold),
+				TextSize = 14,
+				TextColor3 = Color3.fromRGB(225, 225, 225),
+				BackgroundTransparency = 1,
+				BorderSizePixel = 0,
+				Size = UDim2.fromScale(0.9, 0.04),
+				LayoutOrder = 9,
+			}),
+
+			AnimButton1 = e(SidebarButton, {
+				Text = "Anim_1",
+				ColorPrimary = buttonPrimary,
+				ColorSecondary = buttonSecondary,
+				ColorStroke = buttonStroke,
+				TextColor = buttonText,
+				LayoutOrder = 10,
+				OnClick = function()
+					animationHook.playAnimationBySlot(1)
+				end,
+			}),
+
+			AnimButton2 = e(SidebarButton, {
+				Text = "Anim_2",
+				ColorPrimary = buttonPrimary,
+				ColorSecondary = buttonSecondary,
+				ColorStroke = buttonStroke,
+				TextColor = buttonText,
+				LayoutOrder = 12,
+				OnClick = function()
+					animationHook.playAnimationBySlot(2)
+				end,
+			}),
+
+			AnimButton3 = e(SidebarButton, {
+				Text = "Anim_3",
+				ColorPrimary = buttonPrimary,
+				ColorSecondary = buttonSecondary,
+				ColorStroke = buttonStroke,
+				TextColor = buttonText,
+				LayoutOrder = 13,
+				OnClick = function()
+					animationHook.playAnimationBySlot(3)
 				end,
 			}),
 		}),
 
 		-- Footer con información
-		Footer = e("Frame", {
-			Name = "FooterInfo",
+		FooterInfo = e("Frame", {
 			Size = UDim2.fromScale(1, 0.1),
-			Position = UDim2.fromScale(0, 0.9),
+			Position = UDim2.fromScale(0, 1.02),
 			AnchorPoint = Vector2.new(0, 1),
 			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 		}, {
 			InfoText = e("TextLabel", {
-				Text = "(R) Toggle | (H) Hide",
-				FontFace = Font.new("rbxasset://fonts/families/Kanit.json", Enum.FontWeight.Regular),
+				Text = "(R) Alternar UI\n(H) Esconder UI\n(G) Camara normal\n(1-5) Animaciones",
+				FontFace = Font.new("rbxasset://fonts/families/HighwayGothic.json", Enum.FontWeight.Regular),
 				TextSize = 11,
 				TextColor3 = Color3.fromRGB(180, 180, 180),
 				Size = UDim2.fromScale(1, 1),

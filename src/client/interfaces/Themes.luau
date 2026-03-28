@@ -59,14 +59,14 @@ local ThemeBlack: Theme = {
 
 -- Tema Default (Glassmorphism Oscuro)
 local ThemeDefault: Theme = {
-	Primary = Color3.fromRGB(100, 200, 255),
-	Secondary = Color3.fromRGB(50, 150, 220),
-	Accent = Color3.fromRGB(150, 220, 255),
-	Text = Color3.fromRGB(220, 220, 220),
-	Background = Color3.fromRGB(30, 30, 35),
-	Stroke = Color3.fromRGB(80, 120, 150),
-	SidebarBg = Color3.fromRGB(25, 25, 30),
-	Hover = Color3.fromRGB(80, 150, 200),
+	Primary = Color3.fromRGB(255, 255, 255),
+	Secondary = Color3.fromRGB(235, 235, 235),
+	Accent = Color3.fromRGB(245, 245, 245),
+	Text = Color3.fromRGB(40, 40, 40),
+	Background = Color3.fromRGB(248, 248, 248),
+	Stroke = Color3.fromRGB(200, 200, 200),
+	SidebarBg = Color3.fromRGB(242, 242, 242),
+	Hover = Color3.fromRGB(220, 220, 220),
 }
 
 -- Función para obtener el tema actual

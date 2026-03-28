@@ -17,6 +17,7 @@ type SidebarButtonProps = {
 	ColorPrimary: Color3,
 	ColorSecondary: Color3,
 	ColorStroke: Color3,
+	TextColor: Color3?,
 	OnClick: (() -> ())?,
 	Disabled: boolean?,
 	LayoutOrder: number?,
@@ -37,12 +38,14 @@ local function SidebarButton(props: SidebarButtonProps)
 		FontFace = Font.new("rbxasset://fonts/families/Kanit.json", Enum.FontWeight.SemiBold),
 
 		Size = scaleBinding:map(function(s)
-			return UDim2.fromScale(0.85 * s, 0.08 * s)
+			return UDim2.fromScale(0.85 * s, 0.06 * s)
 		end),
 
 		AnchorPoint = Vector2.new(0, 0.5),
 		TextScaled = true,
-		TextColor3 = props.Disabled and Color3.fromRGB(180, 180, 180) or Color3.fromRGB(255, 255, 255),
+		TextColor3 = props.Disabled and Color3.fromRGB(180, 180, 180)
+			or props.TextColor
+			or Color3.fromRGB(255, 255, 255),
 		AutoButtonColor = false,
 		BackgroundColor3 = Color3.fromRGB(35, 35, 35),
 		LayoutOrder = props.LayoutOrder or 0,
