@@ -1,12 +1,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local React = require(ReplicatedStorage.Packages.React)
 
-local SidebarPage = require(script.Parent.Pages.SidebarPage)
+local SidebarLayout = require(script.Parent.Parent.Layout.SidebarLayout)
 
 local e = React.createElement
 
-local function AppUI()
-	return e(SidebarPage)
+local function SidebarPage()
+	return e(SidebarLayout)
 end
 
-return AppUI
+return SidebarPage
