@@ -21,12 +21,6 @@ This project is an interactive environment built in **Roblox Studio** using **Re
 * `[ R ]` - Show or hide the side control menu with smooth transitions.
 * `[ H ]` - **Cinematic Mode / Clean Screen:** Hides all UI (including the React menu and Roblox native CoreGui) to record 3D action without distractions.
 
-## Scene Roadmap and Deliverables
-- [ ] **Scene 1 (Master Node):** Main server setup, player data input simulation, and model justification.
-- [ ] **Scene 2 (Replication and Security):** Data synchronization animation toward regional nodes and access privilege explanation.
-- [ ] **Scene 3 (Automated Backups):** *Scheduler* activation, external cloud storage simulation, and success email notification.
-- [ ] **Final Report (PPTX):** Technical documentation including backup schedule visuals and team conclusions.
-
 ## Technologies Used
 * Roblox Studio (Luau)
 * React for Roblox (Roact)
