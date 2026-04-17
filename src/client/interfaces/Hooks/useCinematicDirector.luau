@@ -39,13 +39,13 @@ local function useCinematicDirector()
 
 	local function playScene(sceneName: string): boolean
 		if isPlayingRef.current then
-			warn("[useCinematicDirector] Ya hay una escena en reproduccion")
+			warn("[useCinematicDirector] A scene is already playing")
 			return false
 		end
 
 		local sceneRunner = CinematicScenes[sceneName]
 		if type(sceneRunner) ~= "function" then
-			warn(string.format("[useCinematicDirector] No existe una coreografia para '%s'", sceneName))
+			warn(string.format("[useCinematicDirector] No choreography exists for '%s'", sceneName))
 			return false
 		end
 
@@ -55,6 +55,7 @@ local function useCinematicDirector()
 		task.spawn(function()
 			local endedRef = { value = false }
 			sceneMovements.beginSession()
+			local currentSceneName = sceneName
 
 			local function endSceneNow(): boolean
 				if endedRef.value then
@@ -66,24 +67,74 @@ local function useCinematicDirector()
 			end
 
 			for seconds = PRE_ROLL_SECONDS, 1, -1 do
-				setCountdownText(string.format("Escena inicia en %d", seconds))
+				setCountdownText(string.format("Scene starts in %d", seconds))
 				task.wait(1)
 			end
 
-			setCountdownText("Preparado...")
+			setCountdownText("Ready...")
 			task.wait(EXTRA_BUFFER_SECONDS)
 			setCountdownText(nil)
 
 			local api = {
-				move = function(scene: string, duration: number, fromPoint: string, toPoint: string): boolean
+				move = function(a: any, b: any, c: any, d: any): boolean
 					if endedRef.value then
 						return false
 					end
-					return sceneMovements.playMovement(scene, duration, fromPoint, toPoint)
+
+					local movementSceneName
+					local duration
+					local fromPoint
+					local toPoint
+
+					if d == nil then
+						movementSceneName = currentSceneName
+						duration = a
+						fromPoint = b
+						toPoint = c
+					else
+						movementSceneName = a
+						duration = b
+						fromPoint = c
+						toPoint = d
+					end
+
+					if type(duration) ~= "number" then
+						error(
+							string.format(
+								"[useCinematicDirector] Invalid duration in scene '%s': %s",
+								currentSceneName,
+								tostring(duration)
+							)
+						)
+					end
+
+					local ok = sceneMovements.playMovement(movementSceneName, duration, fromPoint, toPoint)
+					if not ok then
+						error(
+							string.format(
+								"[useCinematicDirector] Move failed in '%s' (%s -> %s)",
+								tostring(movementSceneName),
+								tostring(fromPoint),
+								tostring(toPoint)
+							)
+						)
+					end
+
+					return true
 				end,
 				wait = function(seconds: number)
 					if endedRef.value then
 						return false
+					end
+
+					if type(seconds) ~= "number" then
+						error(
+							string.format(
+								"[useCinematicDirector] Invalid wait value in scene '%s': %s",
+								currentSceneName,
+								tostring(seconds)
+							)
+						)
 					end
 
 					local remaining = math.max(seconds, 0)
@@ -112,7 +163,7 @@ local function useCinematicDirector()
 			end)
 
 			if not ok then
-				warn(string.format("[useCinematicDirector] Error en escena '%s': %s", sceneName, tostring(err)))
+				warn(string.format("[useCinematicDirector] Error in scene '%s': %s", sceneName, tostring(err)))
 			end
 
 			if not endedRef.value then

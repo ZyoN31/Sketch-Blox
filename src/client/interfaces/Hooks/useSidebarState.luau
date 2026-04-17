@@ -1,7 +1,7 @@
 --[[
 	useSidebarState.luau
-	Hook personalizado para manejar la lógica del sidebar
-	Incluye: toggle de visibilidad (tecla R), modo grabación (tecla H)
+	Sidebar state hook.
+	Includes visibility toggle (R) and recording mode (H).
 	Path: sketch-blox/src/client/interfaces/Hooks/useSidebarState.luau
 ]]
 
@@ -13,21 +13,21 @@ local function useSidebarState()
 	local sidebarVisible, setSidebarVisible = React.useState(true)
 	local uiHidden, setUIHidden = React.useState(false)
 
-	-- Effect para manejar input de teclado
+	-- Handles keyboard input.
 	React.useEffect(function()
 		local function onInputBegan(input, gameProcessed)
 			if gameProcessed or UserInputService:GetFocusedTextBox() then
 				return
 			end
 
-			-- Tecla R: Alterna visibilidad del sidebar
+			-- R key: toggle sidebar visibility.
 			if input.KeyCode == Enum.KeyCode.R then
 				setSidebarVisible(function(prev)
 					return not prev
 				end)
 			end
 
-			-- Tecla H: Alterna modo grabación (ocultar toda la UI)
+			-- H key: toggle recording mode (hide all UI).
 			if input.KeyCode == Enum.KeyCode.H then
 				setUIHidden(function(prev)
 					local nextHidden = not prev

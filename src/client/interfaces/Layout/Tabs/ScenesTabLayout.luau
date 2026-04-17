@@ -27,7 +27,7 @@ local function ScenesTabLayout(props: ScenesTabLayoutProps)
 		}),
 
 		SectionScenes = e("TextLabel", {
-			Text = "ESCENAS",
+			Text = "SCENES",
 			FontFace = Font.new("rbxasset://fonts/families/Kanit.json", Enum.FontWeight.Bold),
 			TextSize = 14,
 			TextColor3 = props.sectionTextColor,
@@ -40,7 +40,7 @@ local function ScenesTabLayout(props: ScenesTabLayoutProps)
 
 	if #props.sceneNames == 0 then
 		children.EmptyScenes = e("TextLabel", {
-			Text = "No hay escenas definidas en Modules/CinematicScenes",
+			Text = "No scenes defined in Modules/CinematicScenes",
 			FontFace = Font.new("rbxasset://fonts/families/Kanit.json", Enum.FontWeight.Medium),
 			TextSize = 12,
 			TextColor3 = Color3.fromRGB(185, 185, 185),

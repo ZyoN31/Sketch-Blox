@@ -1,6 +1,6 @@
 --[[
 	SidebarButton.luau
-	Componente de botón para la barra lateral con animaciones TweenService
+	Sidebar button component with TweenService animations.
 	Includes: hover effects, click animations, smooth transitions
 	Path: sketch-blox/src/client/interfaces/Components/SidebarButton.luau
 ]]
@@ -91,7 +91,7 @@ local function SidebarButton(props: SidebarButtonProps)
 
 		UIStroke = e("UIStroke", { Thickness = 2, Color = strokeColor }),
 
-		-- Padding interior para el texto
+		-- Text padding
 		UIPadding = e("UIPadding", {
 			PaddingLeft = UDim.new(0, 12),
 			PaddingRight = UDim.new(0, 12),

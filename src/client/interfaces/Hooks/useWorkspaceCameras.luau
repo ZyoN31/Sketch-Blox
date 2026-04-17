@@ -9,6 +9,8 @@ local React = require(ReplicatedStorage.Packages.React)
 local FOLLOW_REFRESH_INTERVAL = 0.25
 local FOLLOW_SMOOTH_SPEED = 3
 local FOLLOW_BOOTSTRAP_DISTANCE = 24
+local CHARACTER_ROTATE_SPEED = 5
+local CHARACTER_ROTATE_DURATION = 3
 
 type CameraState = {
 	CameraType: Enum.CameraType,
@@ -25,6 +27,13 @@ type FollowState = {
 	lookAtPosition: Vector3?,
 }
 
+type CharacterRotateState = {
+	isRotating: boolean,
+	targetCFrame: CFrame?,
+	startCFrame: CFrame?,
+	startTime: number,
+}
+
 local function useWorkspaceCameras()
 	local localPlayer = Players.LocalPlayer
 	local savedStateRef = React.useRef(nil :: CameraState?)
@@ -36,6 +45,12 @@ local function useWorkspaceCameras()
 		lastRefresh = 0,
 		lookAtPosition = nil,
 	} :: FollowState)
+	local characterRotateStateRef = React.useRef({
+		isRotating = false,
+		targetCFrame = nil,
+		startCFrame = nil,
+		startTime = 0,
+	} :: CharacterRotateState)
 
 	local function getCurrentCamera(): Camera?
 		return Workspace.CurrentCamera
@@ -94,13 +109,13 @@ local function useWorkspaceCameras()
 	local function resolveCameraTarget(name: string): CFrame?
 		local camerasFolder = getCamerasFolder()
 		if not camerasFolder then
-			warn("[useWorkspaceCameras] No se encontro Workspace.Cameras")
+			warn("[useWorkspaceCameras] Workspace.Cameras was not found")
 			return nil
 		end
 
 		local target = camerasFolder:FindFirstChild(name)
 		if not target then
-			warn(string.format("[useWorkspaceCameras] No se encontro la camara '%s'", name))
+			warn(string.format("[useWorkspaceCameras] Camera '%s' was not found", name))
 			return nil
 		end
 
@@ -116,7 +131,7 @@ local function useWorkspaceCameras()
 			return target.PrimaryPart.CFrame
 		end
 
-		warn(string.format("[useWorkspaceCameras] '%s' no es Camera/BasePart/Model con PrimaryPart", name))
+		warn(string.format("[useWorkspaceCameras] '%s' is not a Camera/BasePart/Model with PrimaryPart", name))
 		return nil
 	end
 
@@ -207,7 +222,7 @@ local function useWorkspaceCameras()
 	local function toggleFollowMode()
 		local camera = getCurrentCamera()
 		if not camera or camera.CameraType ~= Enum.CameraType.Scriptable then
-			warn("[useWorkspaceCameras] Debes estar en una camara de Workspace para usar seguimiento")
+			warn("[useWorkspaceCameras] You must be on a Workspace camera to use follow mode")
 			return false
 		end
 
@@ -218,7 +233,7 @@ local function useWorkspaceCameras()
 			state.lookAtPosition = camera.CFrame.Position + camera.CFrame.LookVector * FOLLOW_BOOTSTRAP_DISTANCE
 			refreshFollowTargets()
 			if #state.playersInFront == 0 then
-				warn("[useWorkspaceCameras] No hay jugadores al frente para seguir")
+				warn("[useWorkspaceCameras] No players in front to follow")
 				state.enabled = false
 				state.lookAtPosition = nil
 				return false
@@ -249,10 +264,44 @@ local function useWorkspaceCameras()
 		state.selectedIndex = nextIndex
 	end
 
+	local function rotateCharacterTowardCamera()
+		local character = localPlayer.Character
+		if not character then
+			warn("[useWorkspaceCameras] Character was not found")
+			return
+		end
+
+		local rootPart = getCharacterRootPart(localPlayer)
+		if not rootPart then
+			warn("[useWorkspaceCameras] HumanoidRootPart was not found")
+			return
+		end
+
+		local camera = getCurrentCamera()
+		if not camera then
+			warn("[useWorkspaceCameras] No camera available")
+			return
+		end
+
+		-- Calculate direction toward the camera.
+		local characterPos = rootPart.Position
+		local cameraPos = camera.CFrame.Position
+		local direction = (cameraPos - characterPos).Unit
+
+		-- Build a CFrame facing the camera.
+		local targetCFrame = CFrame.lookAt(characterPos, characterPos + direction)
+
+		local rotateState = characterRotateStateRef.current
+		rotateState.isRotating = true
+		rotateState.targetCFrame = targetCFrame
+		rotateState.startCFrame = rootPart.CFrame
+		rotateState.startTime = os.clock()
+	end
+
 	local function switchToCameraByName(name: string): boolean
 		local camera = getCurrentCamera()
 		if not camera then
-			warn("[useWorkspaceCameras] Workspace.CurrentCamera es nil")
+			warn("[useWorkspaceCameras] Workspace.CurrentCamera is nil")
 			return false
 		end
 
@@ -326,53 +375,121 @@ local function useWorkspaceCameras()
 
 			if input.KeyCode == Enum.KeyCode.E then
 				cycleFollowTarget(-1)
+				return
+			end
+
+			if input.KeyCode == Enum.KeyCode.L then
+				rotateCharacterTowardCamera()
+				return
 			end
 		end)
 
 		local renderConnection = RunService.RenderStepped:Connect(function(deltaTime)
+			-- Follow-mode update.
 			local state = followStateRef.current
-			if not state.enabled then
-				return
-			end
+			if state.enabled then
+				local camera = getCurrentCamera()
+				if camera and camera.CameraType == Enum.CameraType.Scriptable then
+					if os.clock() - state.lastRefresh > FOLLOW_REFRESH_INTERVAL then
+						refreshFollowTargets()
+					end
 
-			local camera = getCurrentCamera()
-			if not camera or camera.CameraType ~= Enum.CameraType.Scriptable then
-				return
-			end
-
-			if os.clock() - state.lastRefresh > FOLLOW_REFRESH_INTERVAL then
-				refreshFollowTargets()
-			end
-
-			local targetPlayer = state.playersInFront[state.selectedIndex]
-			if not targetPlayer then
-				refreshFollowTargets()
-				targetPlayer = state.playersInFront[state.selectedIndex]
-				if not targetPlayer then
-					state.enabled = false
-					return
+					local targetPlayer = state.playersInFront[state.selectedIndex]
+					if not targetPlayer then
+						refreshFollowTargets()
+						targetPlayer = state.playersInFront[state.selectedIndex]
+						if targetPlayer then
+							local rootPart = getCharacterRootPart(targetPlayer)
+							if rootPart then
+								local anchorCFrame = anchorCFrameRef.current or camera.CFrame
+								local desiredLookAt = rootPart.Position
+								local currentLookAt = state.lookAtPosition
+									or (anchorCFrame.Position + anchorCFrame.LookVector * FOLLOW_BOOTSTRAP_DISTANCE)
+								local alpha = 1 - math.exp(-FOLLOW_SMOOTH_SPEED * deltaTime)
+								state.lookAtPosition = currentLookAt:Lerp(desiredLookAt, alpha)
+								camera.CFrame = CFrame.lookAt(anchorCFrame.Position, state.lookAtPosition)
+							end
+						else
+							state.enabled = false
+						end
+					else
+						local rootPart = getCharacterRootPart(targetPlayer)
+						if rootPart then
+							local anchorCFrame = anchorCFrameRef.current or camera.CFrame
+							local desiredLookAt = rootPart.Position
+							local currentLookAt = state.lookAtPosition
+								or (anchorCFrame.Position + anchorCFrame.LookVector * FOLLOW_BOOTSTRAP_DISTANCE)
+							local alpha = 1 - math.exp(-FOLLOW_SMOOTH_SPEED * deltaTime)
+							state.lookAtPosition = currentLookAt:Lerp(desiredLookAt, alpha)
+							camera.CFrame = CFrame.lookAt(anchorCFrame.Position, state.lookAtPosition)
+						else
+							refreshFollowTargets()
+						end
+					end
 				end
 			end
 
-			local rootPart = getCharacterRootPart(targetPlayer)
-			if not rootPart then
-				refreshFollowTargets()
-				return
-			end
+			-- Character rotation update.
+			local rotateState = characterRotateStateRef.current
+			if rotateState.isRotating then
+				local character = localPlayer.Character
+				if character then
+					local rootPart = getCharacterRootPart(localPlayer)
+					if rootPart and rotateState.targetCFrame and rotateState.startCFrame then
+						local elapsed = os.clock() - rotateState.startTime
+						local progress = math.min(elapsed / CHARACTER_ROTATE_DURATION, 1)
 
-			local anchorCFrame = anchorCFrameRef.current or camera.CFrame
-			local desiredLookAt = rootPart.Position
-			local currentLookAt = state.lookAtPosition
-				or (anchorCFrame.Position + anchorCFrame.LookVector * FOLLOW_BOOTSTRAP_DISTANCE)
-			local alpha = 1 - math.exp(-FOLLOW_SMOOTH_SPEED * deltaTime)
-			state.lookAtPosition = currentLookAt:Lerp(desiredLookAt, alpha)
-			camera.CFrame = CFrame.lookAt(anchorCFrame.Position, state.lookAtPosition)
+						-- Smooth interpolation with easing.
+						local easeProgress
+						if progress < 0.5 then
+							easeProgress = 2 * progress * progress
+						else
+							easeProgress = 1 - 2 * (1 - progress) * (1 - progress)
+						end
+
+						-- Direct CFrame interpolation avoids Euler-angle issues.
+						local charPosition = rootPart.Position
+						local startCF = rotateState.startCFrame
+						local targetCF = rotateState.targetCFrame
+
+						-- Extract target Y rotation only.
+						local _, targetY, _ = targetCF:ToEulerAnglesXYZ()
+						local currentX, currentY, currentZ = rootPart.CFrame:ToEulerAnglesXYZ()
+
+						-- Interpolate angular delta on the shortest path.
+						local angleDiff = targetY - currentY
+						if angleDiff > math.pi then
+							angleDiff = angleDiff - 2 * math.pi
+						elseif angleDiff < -math.pi then
+							angleDiff = angleDiff + 2 * math.pi
+						end
+
+						local newY = currentY + angleDiff * easeProgress
+
+						rootPart.CFrame = CFrame.new(charPosition) * CFrame.Angles(currentX, newY, currentZ)
+
+						if progress >= 1 then
+							rotateState.isRotating = false
+						end
+					else
+						rotateState.isRotating = false
+					end
+				else
+					rotateState.isRotating = false
+				end
+			end
 		end)
 
 		return function()
 			inputConnection:Disconnect()
 			renderConnection:Disconnect()
 			resetFollowState()
+			characterRotateStateRef.current = {
+				isRotating = false,
+				targetCFrame = nil,
+				startCFrame = nil,
+				startTime = 0,
+			}
 			restoreCamera()
 		end
 	end, {})

@@ -1,5 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
+local TaggedVisibilityModule = require(script.modules.TaggedVisibilityModule)
 
 local REMOTES_FOLDER_NAME = "SketchBloxRemotes"
 local PLAY_ANIMATION_EVENT_NAME = "PlayCharacterAnimation"
@@ -11,6 +12,8 @@ local ANIMATION_BY_SLOT = {
 }
 
 local activeTracksByPlayer = {}
+
+TaggedVisibilityModule.SetUp_InvisibilityBlocks()
 
 local function ensureRemotesFolder(): Folder
 	local folder = ReplicatedStorage:FindFirstChild(REMOTES_FOLDER_NAME)

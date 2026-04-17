@@ -32,7 +32,7 @@ local function useCharacterAnimations()
 	local function playAnimationBySlot(slot: number): boolean
 		local remoteEvent = getPlayAnimationEvent()
 		if not remoteEvent then
-			warn("[useCharacterAnimations] No se encontro RemoteEvent de animaciones")
+			warn("[useCharacterAnimations] Animation RemoteEvent was not found")
 			return false
 		end
 

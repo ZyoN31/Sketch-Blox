@@ -1,8 +1,8 @@
 --[[
 	SidebarLayout.luau
-	Layout principal del sidebar con animaciones de despliegue/escondimiento
-	Incluye: UserInputService logic (R para toggle, H para modo grabación)
-	Tematización dinámica basada en UserId
+	Main sidebar layout with show/hide animations.
+	Includes UserInputService logic (R to toggle, H for recording mode).
+	Dynamic theme selection based on UserId.
 	Path: sketch-blox/src/client/interfaces/Layout/SidebarLayout.luau
 ]]
 
@@ -34,7 +34,7 @@ local function SidebarLayout(props: SidebarLayoutProps)
 	local animationHook = useCharacterAnimations()
 	local teleportHook = useWorkspaceTeleports()
 	local cinematicDirector = useCinematicDirector()
-	local activeTab, setActiveTab = React.useState("Camaras")
+	local activeTab, setActiveTab = React.useState("Cameras")
 	local buttonPrimary = theme.Primary
 	local buttonSecondary = theme.Secondary
 	local buttonStroke = theme.Stroke
@@ -43,13 +43,13 @@ local function SidebarLayout(props: SidebarLayoutProps)
 	local sceneNames = cinematicDirector.getSceneNames()
 	local isScenePlaying = cinematicDirector.isPlaying()
 
-	-- Referencias para animación
+	-- Animation references.
 	local containerRef = React.useRef(nil)
 	local screenGuiRef = React.useRef(nil)
 	local isAnimating, setIsAnimating = React.useState(false)
 	local sidebarWidthScale = 0.16
 
-	-- Effect para animar el sidebar cuando cambia visibilidad
+	-- Animate sidebar when visibility changes.
 	React.useEffect(function()
 		local container = containerRef.current
 		if not container then
@@ -132,7 +132,7 @@ local function SidebarLayout(props: SidebarLayoutProps)
 			buttonText = buttonText,
 			sectionTextColor = sectionTextColor,
 		})
-	elseif activeTab == "Animaciones" then
+	elseif activeTab == "Animations" then
 		activeTabLayout = e(AnimationsTabLayout, {
 			animationHook = animationHook,
 			buttonPrimary = buttonPrimary,
@@ -141,7 +141,7 @@ local function SidebarLayout(props: SidebarLayoutProps)
 			buttonText = buttonText,
 			sectionTextColor = sectionTextColor,
 		})
-	elseif activeTab == "Escenas" then
+	elseif activeTab == "Scenes" then
 		activeTabLayout = e(ScenesTabLayout, {
 			cinematicDirector = cinematicDirector,
 			sceneNames = sceneNames,
@@ -180,7 +180,7 @@ local function SidebarLayout(props: SidebarLayoutProps)
 				containerRef.current = instance
 			end,
 		}, {
-			-- Gradiente de fondo
+			-- Background gradient
 			UIGradient = e("UIGradient", {
 				Rotation = -90,
 				Color = ColorSequence.new({
@@ -193,19 +193,19 @@ local function SidebarLayout(props: SidebarLayoutProps)
 				}),
 			}),
 
-			-- Borde decorativo derecho
+			-- Decorative right border
 			UIStroke = e("UIStroke", {
 				Thickness = 2,
 				Color = theme.Stroke,
 				Transparency = 0.3,
 			}),
 
-			-- Glow effect (UICorner en el borde derecho)
+			-- Decorative glow edge
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0, 0),
 			}),
 
-			-- Padding general dentro del sidebar
+			-- Internal sidebar padding
 			UIPadding = e("UIPadding", {
 				PaddingLeft = UDim.new(0, 12),
 				PaddingRight = UDim.new(0, 12),
@@ -213,7 +213,7 @@ local function SidebarLayout(props: SidebarLayoutProps)
 				PaddingBottom = UDim.new(0, 16),
 			}),
 
-			-- Contenedor de botones con layout automático
+			-- Buttons container with automatic layout
 			ButtonsContainer = e("Frame", {
 				Size = UDim2.fromScale(1, 0.78),
 				Position = UDim2.fromScale(0, 0),
@@ -237,10 +237,10 @@ local function SidebarLayout(props: SidebarLayoutProps)
 						SortOrder = Enum.SortOrder.LayoutOrder,
 						FillDirection = Enum.FillDirection.Horizontal,
 					}),
-					TabCamaras = createTabButton("Camaras", "CAM", 1),
+					TabCameras = createTabButton("Cameras", "CAM", 1),
 					TabTeleports = createTabButton("Teleports", "TP", 2),
-					TabAnimaciones = createTabButton("Animaciones", "AN", 3),
-					TabEscenas = createTabButton("Escenas", "SCN", 4),
+					TabAnimations = createTabButton("Animations", "AN", 3),
+					TabScenes = createTabButton("Scenes", "SCN", 4),
 				}),
 
 				TabContent = e("Frame", {
@@ -253,7 +253,7 @@ local function SidebarLayout(props: SidebarLayoutProps)
 				}),
 			}),
 
-			-- Footer con información
+			-- Footer information
 			FooterInfo = e("Frame", {
 				Size = UDim2.fromScale(1, 0.1),
 				Position = UDim2.fromScale(0, 1.02),
@@ -262,7 +262,7 @@ local function SidebarLayout(props: SidebarLayoutProps)
 				BorderSizePixel = 0,
 			}, {
 				InfoText = e("TextLabel", {
-					Text = "(R) Alternar UI\n(H) Esconder UI\n(G) Camara normal\n(X) Seguir jugador\n(E/Q) Cambiar objetivo",
+					Text = "(R) Toggle UI\n(H) Hide UI\n(G) Normal camera\n(X) Follow player\n(E/Q) Switch target",
 					FontFace = Font.new("rbxasset://fonts/families/HighwayGothic.json", Enum.FontWeight.Regular),
 					TextSize = 11,
 					TextColor3 = Color3.fromRGB(180, 180, 180),

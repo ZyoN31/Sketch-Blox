@@ -1,34 +1,34 @@
-# 🎮 Nyctophi Games - Data Core Presentation (Sketch-Blox)
+# Nyctophi Games - Data Core Presentation (Sketch-Blox)
 
-## 📖 Descripción General
-Este proyecto es un entorno interactivo desarrollado en **Roblox Studio** utilizando **React (Roact)**. Su propósito principal es servir como escenario cinematográfico y panel de control para grabar un video educativo (formato TikTok) sobre la implementación de un **Plan de Mantenimiento de Bases de Datos Distribuidas** para la empresa de videojuegos ficticia **Nyctophi Games**.
+## Overview
+This project is an interactive environment built in **Roblox Studio** using **React (Roact)**. Its main purpose is to act as a cinematic stage and control panel to record an educational video (TikTok format) about implementing a **Distributed Database Maintenance Plan** for the fictional game company **Nyctophi Games**.
 
-## 🎓 Contexto Académico
-* **Materia:** Base de Datos Avanzadas
-* **Evidencia:** EC1 - Gestión de Base de Datos
-* **Equipo de Desarrollo (DBAs de Nyctophi Games):**
-    * Joshua Méndez Castillo
+## Academic Context
+* **Course:** Advanced Databases
+* **Evidence:** EC1 - Database Management
+* **Development Team (Nyctophi Games DBAs):**
+    * Joshua Mendez Castillo
     * Maria Isabel Rojas Pastor
     * Jose Francisco Martinez Jacobo
-* **Objetivo:** Explicar el modelo de replicación, almacenamiento, control de acceso y programación de respaldos de forma creativa y en menos de 60 segundos.
+* **Goal:** Explain the replication model, storage strategy, access control, and backup scheduling in a creative way in under 60 seconds.
 
-## ✨ Características Técnicas del Place
-* **Interfaz de Control UI (React):** Panel lateral interactivo, moderno y escalable para gestionar las animaciones, cámaras y efectos del escenario durante la grabación.
-* **Tematización Dinámica:** La paleta de colores de la interfaz se adapta automáticamente a la identidad visual de cada integrante dependiendo de su `UserId` de Roblox (Rosa, Azul o Negro).
-* **Modo Grabación (Overlay):** Sistema de atajos de teclado diseñado para limpiar la pantalla de elementos intrusivos y capturar planos cinematográficos puros.
+## Technical Features
+* **UI Control Interface (React):** Interactive, modern, and scalable side panel to manage scene animations, cameras, and effects while recording.
+* **Dynamic Theming:** The interface color palette automatically adapts to each team member identity based on their Roblox `UserId` (Pink, Blue, or Black).
+* **Recording Mode (Overlay):** Keyboard shortcut system designed to clear intrusive UI elements and capture clean cinematic shots.
 
-## ⌨️ Controles de Interfaz
-* `[ R ]` - Despliega u oculta el menú lateral de control mediante animaciones de transición suaves.
-* `[ H ]` - **Modo Cinemático / Clean Screen:** Oculta absolutamente TODA la interfaz (incluyendo el menú de React y el CoreGui nativo de Roblox) para permitir la grabación de la acción en 3D sin distracciones.
+## Interface Controls
+* `[ R ]` - Show or hide the side control menu with smooth transitions.
+* `[ H ]` - **Cinematic Mode / Clean Screen:** Hides all UI (including the React menu and Roblox native CoreGui) to record 3D action without distractions.
 
-## 🚀 Roadmap de Escenas y Entregables
-- [ ] **Escena 1 (Nodo Maestro):** Configuración del servidor principal, simulación de entrada de datos de jugadores y justificación del modelo.
-- [ ] **Escena 2 (Replicación y Seguridad):** Animación de sincronización de datos hacia los nodos esclavos (regionales) y explicación de privilegios de acceso.
-- [ ] **Escena 3 (Respaldos Automatizados):** Activación del *Scheduler*, simulación de almacenamiento en nube externa y notificación de éxito por correo electrónico.
-- [ ] **Reporte Final (PPTX):** Documentación técnica incluyendo el esquema visual de fechas/horas de respaldo y las conclusiones del equipo.
+## Scene Roadmap and Deliverables
+- [ ] **Scene 1 (Master Node):** Main server setup, player data input simulation, and model justification.
+- [ ] **Scene 2 (Replication and Security):** Data synchronization animation toward regional nodes and access privilege explanation.
+- [ ] **Scene 3 (Automated Backups):** *Scheduler* activation, external cloud storage simulation, and success email notification.
+- [ ] **Final Report (PPTX):** Technical documentation including backup schedule visuals and team conclusions.
 
-## 🛠️ Tecnologías Utilizadas
+## Technologies Used
 * Roblox Studio (Luau)
-* React para Roblox (Roact)
-* TweenService (Animaciones fluidas)
-* UserInputService (Manejo de atajos de teclado)
+* React for Roblox (Roact)
+* TweenService (Smooth animations)
+* UserInputService (Keyboard shortcut handling)

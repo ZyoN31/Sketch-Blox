@@ -1,6 +1,6 @@
 --[[
 	Themes.luau
-	Archivo de configuración de temas dinámicos basado en UserId
+	Dynamic theme configuration based on UserId.
 	Path: sketch-blox/src/client/interfaces/Themes.luau
 ]]
 
@@ -9,7 +9,7 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local userId = player.UserId
 
--- Tipos de tema
+-- Theme type definition
 type Theme = {
 	Primary: Color3,
 	Secondary: Color3,
@@ -21,7 +21,7 @@ type Theme = {
 	Hover: Color3,
 }
 
--- Tema Rosa (UserId: 3456438496)
+-- Pink theme (UserId: 3456438496)
 local ThemePink: Theme = {
 	Primary = Color3.fromRGB(255, 101, 255),
 	Secondary = Color3.fromRGB(114, 14, 200),
@@ -33,7 +33,7 @@ local ThemePink: Theme = {
 	Hover = Color3.fromRGB(200, 100, 200),
 }
 
--- Tema Azul (UserId: 182328532)
+-- Blue theme (UserId: 182328532)
 local ThemeBlue: Theme = {
 	Primary = Color3.fromRGB(100, 150, 255),
 	Secondary = Color3.fromRGB(30, 80, 180),
@@ -45,7 +45,7 @@ local ThemeBlue: Theme = {
 	Hover = Color3.fromRGB(100, 150, 200),
 }
 
--- Tema Negro (UserId: 168423191)
+-- Black theme (UserId: 168423191)
 local ThemeBlack: Theme = {
 	Primary = Color3.fromRGB(200, 200, 200),
 	Secondary = Color3.fromRGB(100, 100, 100),
@@ -57,7 +57,7 @@ local ThemeBlack: Theme = {
 	Hover = Color3.fromRGB(60, 60, 60),
 }
 
--- Tema Default (Glassmorphism Oscuro)
+-- Default theme (dark glassmorphism)
 local ThemeDefault: Theme = {
 	Primary = Color3.fromRGB(255, 255, 255),
 	Secondary = Color3.fromRGB(235, 235, 235),
@@ -69,7 +69,7 @@ local ThemeDefault: Theme = {
 	Hover = Color3.fromRGB(220, 220, 220),
 }
 
--- Función para obtener el tema actual
+-- Returns the active theme for the current user.
 local function getTheme(): Theme
 	if userId == 3456438496 then
 		return ThemePink

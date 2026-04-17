@@ -29,7 +29,7 @@ local function CamerasTabLayout(props: CamerasTabLayoutProps)
 		}),
 
 		SectionCameras = e("TextLabel", {
-			Text = "CAMARAS",
+			Text = "CAMERAS",
 			FontFace = Font.new("rbxasset://fonts/families/Kanit.json", Enum.FontWeight.Bold),
 			TextSize = 14,
 			TextColor3 = props.sectionTextColor,
@@ -40,7 +40,7 @@ local function CamerasTabLayout(props: CamerasTabLayoutProps)
 		}),
 
 		CameraButton1 = e(SidebarButton, {
-			Text = "Cam_Z1",
+			Text = "Camera_Z1",
 			ColorPrimary = props.buttonPrimary,
 			ColorSecondary = props.buttonSecondary,
 			ColorStroke = props.buttonStroke,
@@ -52,7 +52,7 @@ local function CamerasTabLayout(props: CamerasTabLayoutProps)
 		}),
 
 		CameraButton2 = e(SidebarButton, {
-			Text = "Cam_Z2",
+			Text = "Camera_Z2",
 			ColorPrimary = props.buttonPrimary,
 			ColorSecondary = props.buttonSecondary,
 			ColorStroke = props.buttonStroke,
@@ -64,7 +64,7 @@ local function CamerasTabLayout(props: CamerasTabLayoutProps)
 		}),
 
 		CameraButton3 = e(SidebarButton, {
-			Text = "Cam_Z3",
+			Text = "Camera_Z3",
 			ColorPrimary = props.buttonPrimary,
 			ColorSecondary = props.buttonSecondary,
 			ColorStroke = props.buttonStroke,
@@ -72,6 +72,18 @@ local function CamerasTabLayout(props: CamerasTabLayoutProps)
 			LayoutOrder = 4,
 			OnClick = function()
 				props.cameraHook.switchToCameraByIndex(3)
+			end,
+		}),
+
+		CameraButton4 = e(SidebarButton, {
+			Text = "Camera_Z4",
+			ColorPrimary = props.buttonPrimary,
+			ColorSecondary = props.buttonSecondary,
+			ColorStroke = props.buttonStroke,
+			TextColor = props.buttonText,
+			LayoutOrder = 5,
+			OnClick = function()
+				props.cameraHook.switchToCameraByIndex(4)
 			end,
 		}),
 	})

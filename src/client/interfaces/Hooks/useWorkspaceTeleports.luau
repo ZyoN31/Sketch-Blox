@@ -31,13 +31,13 @@ local function useWorkspaceTeleports()
 	local function resolveTeleportTarget(name: string): CFrame?
 		local teleportsFolder = getTeleportsFolder()
 		if not teleportsFolder then
-			warn("[useWorkspaceTeleports] No se encontro Workspace.Teleports")
+			warn("[useWorkspaceTeleports] Workspace.Teleports was not found")
 			return nil
 		end
 
 		local target = teleportsFolder:FindFirstChild(name)
 		if not target then
-			warn(string.format("[useWorkspaceTeleports] No se encontro el teleport '%s'", name))
+			warn(string.format("[useWorkspaceTeleports] Teleport '%s' was not found", name))
 			return nil
 		end
 
@@ -49,14 +49,14 @@ local function useWorkspaceTeleports()
 			return target.PrimaryPart.CFrame
 		end
 
-		warn(string.format("[useWorkspaceTeleports] '%s' no es BasePart/Model con PrimaryPart", name))
+		warn(string.format("[useWorkspaceTeleports] '%s' is not a BasePart/Model with PrimaryPart", name))
 		return nil
 	end
 
 	local function teleportByName(name: string): boolean
 		local rootPart = getCharacterRootPart()
 		if not rootPart then
-			warn("[useWorkspaceTeleports] No se encontro HumanoidRootPart")
+			warn("[useWorkspaceTeleports] HumanoidRootPart was not found")
 			return false
 		end
 

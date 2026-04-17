@@ -27,7 +27,7 @@ end
 local function resolveSceneFolder(sceneName: string): Folder?
 	local sceneMovements = getSceneMovementsFolder()
 	if not sceneMovements then
-		warn("[useSceneMovements] No se encontro Workspace.SceneMovements")
+		warn("[useSceneMovements] Workspace.SceneMovements was not found")
 		return nil
 	end
 
@@ -36,7 +36,7 @@ local function resolveSceneFolder(sceneName: string): Folder?
 		return sceneFolder
 	end
 
-	warn(string.format("[useSceneMovements] No se encontro la escena '%s'", sceneName))
+	warn(string.format("[useSceneMovements] Scene '%s' was not found", sceneName))
 	return nil
 end
 
@@ -58,6 +58,39 @@ local function getSortedPointNames(sceneName: string): { string }
 	return names
 end
 
+local function resolvePointName(sceneName: string, pointRef: any): string?
+	local pointNames = getSortedPointNames(sceneName)
+	if #pointNames == 0 then
+		return nil
+	end
+
+	if type(pointRef) == "number" then
+		local index = math.floor(pointRef)
+		if index >= 1 and index <= #pointNames then
+			return pointNames[index]
+		end
+		return nil
+	end
+
+	if type(pointRef) ~= "string" then
+		return nil
+	end
+
+	local directName = pointRef
+	if table.find(pointNames, directName) then
+		return directName
+	end
+
+	local lowerRef = string.lower(directName)
+	for _, pointName in ipairs(pointNames) do
+		if string.lower(pointName) == lowerRef then
+			return pointName
+		end
+	end
+
+	return nil
+end
+
 local function resolvePointCFrame(sceneName: string, pointName: string): CFrame?
 	local sceneFolder = resolveSceneFolder(sceneName)
 	if not sceneFolder then
@@ -66,7 +99,7 @@ local function resolvePointCFrame(sceneName: string, pointName: string): CFrame?
 
 	local point = sceneFolder:FindFirstChild(pointName)
 	if not point then
-		warn(string.format("[useSceneMovements] No se encontro el punto '%s' en %s", pointName, sceneName))
+		warn(string.format("[useSceneMovements] Point '%s' was not found in %s", pointName, sceneName))
 		return nil
 	end
 
@@ -82,7 +115,7 @@ local function resolvePointCFrame(sceneName: string, pointName: string): CFrame?
 		return point.PrimaryPart.CFrame
 	end
 
-	warn(string.format("[useSceneMovements] '%s' no es Camera/BasePart/Model con PrimaryPart", pointName))
+	warn(string.format("[useSceneMovements] '%s' is not a Camera/BasePart/Model with PrimaryPart", pointName))
 	return nil
 end
 
@@ -94,7 +127,7 @@ local function tweenCameraLinear(
 ): boolean
 	local camera = getCurrentCamera()
 	if not camera then
-		warn("[useSceneMovements] Workspace.CurrentCamera es nil")
+		warn("[useSceneMovements] Workspace.CurrentCamera is nil")
 		return false
 	end
 
@@ -169,7 +202,7 @@ local function useSceneMovements()
 
 		local camera = getCurrentCamera()
 		if not camera then
-			warn("[useSceneMovements] No se pudo iniciar sesion: CurrentCamera es nil")
+			warn("[useSceneMovements] Could not start session: CurrentCamera is nil")
 			return false
 		end
 
@@ -231,7 +264,7 @@ local function useSceneMovements()
 		closeSession(false)
 	end
 
-	local function playMovement(sceneName: string, duration: number, fromPoint: string, toPoint: string): boolean
+	local function playMovement(sceneName: string, duration: number, fromPoint: any, toPoint: any): boolean
 		if not sessionStateRef.active then
 			beginSession()
 		end
@@ -240,12 +273,55 @@ local function useSceneMovements()
 			return false
 		end
 
-		local fromCFrame = resolvePointCFrame(sceneName, fromPoint)
+		if type(sceneName) ~= "string" or sceneName == "" then
+			warn("[useSceneMovements] Invalid sceneName")
+			return false
+		end
+
+		if type(duration) ~= "number" then
+			warn("[useSceneMovements] duration must be a number")
+			return false
+		end
+
+		if duration ~= duration then
+			warn("[useSceneMovements] duration is NaN")
+			return false
+		end
+
+		local resolvedFromPoint = resolvePointName(sceneName, fromPoint)
+		if not resolvedFromPoint then
+			local names = getSortedPointNames(sceneName)
+			warn(
+				string.format(
+					"[useSceneMovements] Invalid start point '%s' in %s. Available: %s",
+					tostring(fromPoint),
+					sceneName,
+					table.concat(names, ", ")
+				)
+			)
+			return false
+		end
+
+		local resolvedToPoint = resolvePointName(sceneName, toPoint)
+		if not resolvedToPoint then
+			local names = getSortedPointNames(sceneName)
+			warn(
+				string.format(
+					"[useSceneMovements] Invalid destination point '%s' in %s. Available: %s",
+					tostring(toPoint),
+					sceneName,
+					table.concat(names, ", ")
+				)
+			)
+			return false
+		end
+
+		local fromCFrame = resolvePointCFrame(sceneName, resolvedFromPoint)
 		if not fromCFrame then
 			return false
 		end
 
-		local toCFrame = resolvePointCFrame(sceneName, toPoint)
+		local toCFrame = resolvePointCFrame(sceneName, resolvedToPoint)
 		if not toCFrame then
 			return false
 		end

@@ -29,7 +29,7 @@ local function AnimationsTabLayout(props: AnimationsTabLayoutProps)
 		}),
 
 		SectionAnims = e("TextLabel", {
-			Text = "ANIMACIONES",
+			Text = "ANIMATIONS",
 			FontFace = Font.new("rbxasset://fonts/families/Kanit.json", Enum.FontWeight.Bold),
 			TextSize = 14,
 			TextColor3 = props.sectionTextColor,
